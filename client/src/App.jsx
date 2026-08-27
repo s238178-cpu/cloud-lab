@@ -7,7 +7,7 @@ function App() {
 
   const fetchStudents = async () => {
     try {
-      const res = await fetch('/api/students')
+      const res = await fetch('http://localhost:5000/api/students')
       const data = await res.json()
       setStudents(data)
     } catch (err) {
@@ -24,14 +24,14 @@ function App() {
     if (!form.studentId || !form.name || !form.email) return
 
     if (editingId) {
-      await fetch(`/api/students/${editingId}`, {
+      await fetch(`http://localhost:5000/api/students/${editingId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
       })
       setEditingId(null)
     } else {
-      await fetch('/api/students', {
+      await fetch('http://localhost:5000/api/students', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
@@ -48,7 +48,7 @@ function App() {
   }
 
   const handleDelete = async (id) => {
-    await fetch(`/api/students/${id}`, { method: 'DELETE' })
+    await fetch(`http://localhost:5000/api/students/${id}`, { method: 'DELETE' })
     fetchStudents()
   }
 
