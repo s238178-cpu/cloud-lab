@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản Lý Sinh Viên (MERN Stack)</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #121212; color: #fff; text-align: center; padding: 40px; }
+        .form-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 10px; }
+        input { padding: 10px; border-radius: 4px; border: 1px solid #444; background: #222; color: #fff; width: 200px; }
+        button { padding: 10px 20px; border: none; border-radius: 4px; background: #4CAF50; color: white; cursor: pointer; font-weight: bold; width: 630px; margin-top: 10px; }
+        button:hover { background: #45a049; }
+        table { margin: 30px auto; border-collapse: collapse; width: 650px; background: #1e1e1e; }
+        th, td { padding: 12px; border: 1px solid #333; text-align: left; }
+        th { background: #2a2a2a; }
+        #msg { font-weight: bold; margin-top: 10px; height: 20px; }
+    </style>
+</head>
+<body>
+    <h2>Quản Lý Sinh Viên (MERN Stack)</h2>
+    <div style="width: 650px; margin: 0 auto;">
+        <div class="form-container">
+            <input type="text" id="studentId" placeholder="Mã SV" value="238178">
+            <input type="text" id="name" placeholder="Tên SV" value="Trần Trí Nhân">
+            <input type="email" id="email" placeholder="Email" value="s238178@nctu.edu.vn">
+        </div>
+        <button onclick="addStudent()">Thêm Sinh Viên</button>
+        <div id="msg"></div>
+    </div>
+
+    <h3>Danh Sách Sinh Viên</h3>
+    <table>
+        <thead>
+            <tr><th>Mã SV</th><th>Tên Sinh Viên</th><th>Email</th></tr>
+        </thead>
+        <tbody id="student-list"></tbody>
+    </table>
+
+    <script>
+        const backendBase = window.location.origin.replace('-3000.', '-5000.');
+        const endpoints = ['/api/students', '/students', '/api/student', '/student'];
+
+        async function requestBackend(options = {}) {
+            for (let ep of endpoints) {
+                try {
+                    const res = await fetch(`${backendBase}${ep}`, options);
+                    if (res.ok) {
+                        return { ok: true, res, data: await res.json() };
+                    }
+                } catch (e) {}
+            }
+            return { ok: false };
+        }
+
+        async function loadStudents() {
+            const result = await requestBackend();
+            const msg = document.getElementById('msg');
+            const tbody = document.getElementById('student-list');
+            
+            if (result.ok && Array.isArray(result.data)) {
+                tbody.innerHTML = '';
+                result.data.forEach(s => {
+                    tbody.innerHTML += `<tr><td>${s.studentId || s.id || ''}</td><td>${s.name || ''}</td><td>${s.email || ''}</td></tr>`;
+                });
+                msg.style.color = '#4CAF50';
+                msg.innerText = 'Đã kết nối thành công Backend!';
+            } else {
+                msg.style.color = '#f44336';
+                msg.innerText = 'Chưa tải được dữ liệu từ Backend';
+            }
+        }
+
+        async function addStudent() {
+            const studentId = document.getElementById('studentId').value;
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const msg = document.getElementById('msg');
+
+            msg.style.color = '#ffeb3b';
+            msg.innerText = 'Đang thêm sinh viên...';
+
+            const payload = { studentId, name, email };
+            const options = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            };
+
+            const result = await requestBackend(options);
+
+            if (result.ok) {
+                msg.style.color = '#4CAF50';
+                msg.innerText = 'Thêm sinh viên thành công!';
+                loadStudents();
+            } else {
+                msg.style.color = '#f44336';
+                msg.innerText = 'Lỗi gửi dữ liệu (Kiểm tra lại Backend/Database)';
+            }
+        }
+
+        loadStudents();
+    </script>
+</body>
+</html>
