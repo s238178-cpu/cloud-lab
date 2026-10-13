@@ -1,4 +1,4 @@
 # Cloud Computing Laboratory
-Student Name:
-Student ID:
-Class:
+Student Name: Trần Trí Nhân
+Student ID: 238178
+Class: DH23TIN10
